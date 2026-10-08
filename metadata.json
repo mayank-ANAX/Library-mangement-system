@@ -1,0 +1,6 @@
+{
+  "name": "Library Management System",
+  "description": "Full-stack Library Management System for cataloging, circulation, member management, fine tracking, analytics, and reporting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
