@@ -138,26 +138,46 @@ python app.py
 
 ## 7. Deployment Guides (Vercel & Netlify)
 
-### Vercel Deployment
-The project includes a production-ready `vercel.json` and serverless entry point (`api/index.ts`):
+### Vercel Deployment (Vercel Services)
+The project is configured for Vercel Services multi-service deployment (`vercel.json`):
 1. **Configuration (`vercel.json`)**:
    ```json
    {
-     "version": 2,
-     "buildCommand": "npm run build",
-     "outputDirectory": "dist",
+     "$schema": "https://openapi.vercel.sh/vercel.json",
+     "services": {
+       "app": {
+         "root": ".",
+         "framework": "vite",
+         "bindings": [
+           {
+             "type": "service",
+             "service": "backend",
+             "format": "url",
+             "env": "BACKEND_URL"
+           }
+         ]
+       },
+       "backend": {
+         "root": "backend",
+         "framework": "flask"
+       }
+     },
      "rewrites": [
-       { "source": "/api/(.*)", "destination": "/api" },
-       { "source": "/(.*)", "destination": "/index.html" }
+       { "source": "/api/(.*)", "destination": { "service": "backend" } },
+       { "source": "/(.*)", "destination": { "service": "app" } }
      ]
    }
    ```
-2. **Environment Variables**:
+2. **Local Multi-Service Development**:
+   Run both the frontend and backend services together locally with binding injection:
+   ```bash
+   vercel dev
+   ```
+3. **Environment Variables**:
    In your Vercel Project Settings under **Environment Variables**, set:
    - `JWT_SECRET`: `your-secure-production-jwt-key`
-   - `NODE_ENV`: `production`
-   - `VITE_API_URL`: `/api`
-3. **Deploy via Vercel CLI / GitHub**:
+   - `FLASK_SECRET_KEY`: `your-secure-production-flask-key`
+4. **Deploy via Vercel CLI / GitHub**:
    ```bash
    vercel --prod
    ```

@@ -1,13 +1,20 @@
 """
 Flask Application Factory and Server Entry Point
+Supports both module execution (backend.app) and service root execution (app)
 """
 
 import os
 from flask import Flask, jsonify
 from flask_cors import CORS
-from .config import Config
-from .models import db
-from .routes import api
+
+try:
+    from .config import Config
+    from .models import db
+    from .routes import api
+except ImportError:
+    from config import Config
+    from models import db
+    from routes import api
 
 def create_app(config_class=Config):
     app = Flask(__name__)

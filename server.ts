@@ -50,6 +50,44 @@ app.use((req, res, next) => {
 // Initialize database on startup
 await getDb();
 
+// Support for Vercel Services BACKEND_URL binding:
+// If an internal backend service is bound via BACKEND_URL, forward /api/* requests to it
+const BACKEND_URL = process.env.BACKEND_URL;
+if (BACKEND_URL) {
+  app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const targetUrl = new URL(req.originalUrl || req.url, BACKEND_URL);
+      const headers: Record<string, string> = {};
+      for (const [key, val] of Object.entries(req.headers)) {
+        if (val && typeof val === 'string' && key.toLowerCase() !== 'host') {
+          headers[key] = val;
+        }
+      }
+
+      const options: RequestInit = {
+        method: req.method,
+        headers,
+      };
+
+      if (!['GET', 'HEAD'].includes(req.method) && req.body && Object.keys(req.body).length > 0) {
+        options.body = JSON.stringify(req.body);
+        headers['content-type'] = 'application/json';
+      }
+
+      const response = await fetch(targetUrl.toString(), options);
+      res.status(response.status);
+      response.headers.forEach((value, name) => {
+        res.setHeader(name, value);
+      });
+      const data = await response.text();
+      res.send(data);
+    } catch (err) {
+      console.error('Error forwarding request to bound BACKEND_URL:', err);
+      next();
+    }
+  });
+}
+
 // ==========================================
 // AUTHENTICATION ROUTES
 // ==========================================

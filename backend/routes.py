@@ -7,21 +7,39 @@ import csv
 from functools import wraps
 from flask import Blueprint, request, jsonify, make_response
 import jwt
-from .models import db, User, Book, Member, Issue
-from .config import Config
-from .services import (
-    get_today_str,
-    get_days_diff,
-    is_valid_isbn,
-    normalize_isbn,
-    is_valid_indian_phone,
-    normalize_phone,
-    is_valid_email,
-    issue_book_atomic,
-    return_book_atomic,
-    can_delete_book,
-    validate_issue_eligibility
-)
+
+try:
+    from .models import db, User, Book, Member, Issue
+    from .config import Config
+    from .services import (
+        get_today_str,
+        get_days_diff,
+        is_valid_isbn,
+        normalize_isbn,
+        is_valid_indian_phone,
+        normalize_phone,
+        is_valid_email,
+        issue_book_atomic,
+        return_book_atomic,
+        can_delete_book,
+        validate_issue_eligibility
+    )
+except ImportError:
+    from models import db, User, Book, Member, Issue
+    from config import Config
+    from services import (
+        get_today_str,
+        get_days_diff,
+        is_valid_isbn,
+        normalize_isbn,
+        is_valid_indian_phone,
+        normalize_phone,
+        is_valid_email,
+        issue_book_atomic,
+        return_book_atomic,
+        can_delete_book,
+        validate_issue_eligibility
+    )
 
 api = Blueprint('api', __name__, url_prefix='/api')
 

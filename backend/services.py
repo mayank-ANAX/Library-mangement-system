@@ -4,7 +4,11 @@ Business logic and validation service for Flask backend
 
 import re
 from datetime import datetime, timedelta
-from .models import db, Book, Member, Issue
+
+try:
+    from .models import db, Book, Member, Issue
+except ImportError:
+    from models import db, Book, Member, Issue
 
 def get_today_str() -> str:
     return datetime.utcnow().strftime('%Y-%m-%d')
