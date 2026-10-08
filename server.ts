@@ -955,9 +955,11 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: 'An unexpected internal server error occurred.' });
 });
 
-// Start listener
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[LMS Full-Stack Server] Running on http://0.0.0.0:${PORT} (Node ${process.version})`);
-});
+// Start listener (in local & container environments)
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[LMS Full-Stack Server] Running on http://0.0.0.0:${PORT} (Node ${process.version})`);
+  });
+}
 
 export default app;

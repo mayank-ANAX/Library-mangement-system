@@ -136,21 +136,36 @@ python app.py
 
 ---
 
-## 7. Netlify Deployment Guide
+## 7. Deployment Guides (Vercel & Netlify)
 
-This application is built for seamless deployment on Netlify:
-
-1. **Build Configuration**:
-   - `netlify.toml` is pre-configured with:
-     - `command = "npm run build"`
-     - `publish = "dist"`
-     - Single Page Application (SPA) redirects (`/* -> /index.html 200`).
+### Vercel Deployment
+The project includes a production-ready `vercel.json` and serverless entry point (`api/index.ts`):
+1. **Configuration (`vercel.json`)**:
+   ```json
+   {
+     "version": 2,
+     "buildCommand": "npm run build",
+     "outputDirectory": "dist",
+     "rewrites": [
+       { "source": "/api/(.*)", "destination": "/api" },
+       { "source": "/(.*)", "destination": "/index.html" }
+     ]
+   }
+   ```
 2. **Environment Variables**:
-   In your Netlify Dashboard under **Site configuration > Environment variables**, configure:
-   - `NODE_VERSION`: `20`
-   - `JWT_SECRET`: `your-random-production-jwt-secret-string`
-   - `VITE_API_URL`: `/api` (or URL to your backend API instance)
-3. **Deploy via Netlify CLI**:
+   In your Vercel Project Settings under **Environment Variables**, set:
+   - `JWT_SECRET`: `your-secure-production-jwt-key`
+   - `NODE_ENV`: `production`
+   - `VITE_API_URL`: `/api`
+3. **Deploy via Vercel CLI / GitHub**:
+   ```bash
+   vercel --prod
+   ```
+
+### Netlify Deployment
+1. **Configuration**: `netlify.toml` is pre-configured with `command = "npm run build"`, `publish = "dist"`, and SPA rewrites (`/* -> /index.html 200`).
+2. **Environment Variables**: Configure `NODE_VERSION=20`, `JWT_SECRET`, and `VITE_API_URL=/api`.
+3. **Deploy via CLI**:
    ```bash
    netlify deploy --build --prod
    ```
