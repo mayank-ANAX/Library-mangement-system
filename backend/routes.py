@@ -87,7 +87,21 @@ def login():
     if not username or not password:
         return jsonify({'error': 'Username and password are required.'}), 400
 
-    user = User.query.filter_by(username=username).first()
+    u_lower = username.lower()
+    user = User.query.filter(db.func.lower(User.username) == u_lower).first()
+
+    # If users table is empty or demo user missing on fresh deployment, auto-seed
+    if not user and u_lower in ['admin', 'librarian']:
+        try:
+            try:
+                from .seed import seed_data_in_context
+            except ImportError:
+                from seed import seed_data_in_context
+            seed_data_in_context()
+            user = User.query.filter(db.func.lower(User.username) == u_lower).first()
+        except Exception as e:
+            print(f"On-demand seeding error: {e}")
+
     if not user or not user.check_password(password):
         return jsonify({'error': 'Invalid username or password.'}), 401
 

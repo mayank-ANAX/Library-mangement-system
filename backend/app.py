@@ -35,6 +35,14 @@ def create_app(config_class=Config):
 
     with app.app_context():
         db.create_all()
+        try:
+            try:
+                from .seed import seed_data_in_context
+            except ImportError:
+                from seed import seed_data_in_context
+            seed_data_in_context()
+        except Exception as e:
+            print(f"Auto-seeding status: {e}")
 
     return app
 
